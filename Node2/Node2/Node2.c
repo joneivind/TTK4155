@@ -12,6 +12,7 @@
 #include "ADC.h"
 #include "GAME.h"
 #include "motor.h"
+#include "motor_controller.h"
 #include <avr/io.h>
 #include <stdio.h>
 #include <string.h>
@@ -25,6 +26,9 @@ int main(void)
 	TC_init();
 	ADC_init();
 	solenoid_init();
+	//dacInit(0b111);
+	motor_init();
+	TWI_Master_Initialise();
 	
 	CAN_message message;
 	message.id = 2;
@@ -37,19 +41,23 @@ int main(void)
 	while(1)
     {
         CAN_recieve(&receivedMessage);
-        //_delay_ms(10);
-		CAN_printMessage(&receivedMessage);
+        //_delay_ms(20);
+		//CAN_printMessage(&receivedMessage);
 		
-		//_delay_ms(10);
-		CAN_PWMPosition(&receivedMessage); //TESING
-		get_score();
-		solenoid_trigger(&receivedMessage);
+		_delay_ms(10);
+		//CAN_PWMPosition(&receivedMessage);
+		//get_score();
+		//solenoid_trigger(&receivedMessage);
 		
 		message.data[0] = newgame.score;
 		CAN_sendMessage(&message);
-		printf("Test\n");
-		//motor_test();
 		_delay_ms(10);
+		
+		
+		//motorSpeed(receivedMessage.data[0]);
+		//motor_test();
+		motorEncoderRead();
+		
 		
     }
 }

@@ -17,10 +17,16 @@
 #include <avr/io.h>
 
 void motor_init();
-void motorSpeed(uint16_t speed);
+void motorSpeed(int16_t speed);
 void motorDirection(uint8_t dir);
 uint8_t motorEncoderRead();
 void motorResetEncoder();
 void motor_test();
+uint8_t reverse(uint8_t x);
+
+void MOTOR_reset();
+void MOTOR_control(int8_t xValue);
+unsigned char MOTOR_calculateSpeed(int8_t xValue);
+int8_t MOTOR_PDcontroller(uint8_t xValue);
 
 #endif /* MOTOR_H_ */

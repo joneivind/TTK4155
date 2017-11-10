@@ -21,9 +21,7 @@ uint16_t get_score(){
 		ball_detected = 1;
 		newgame.score++;
 		printf("Score: %d\n", newgame.score-1);
-		while(ADC_read(0) <= 5){
-			_delay_ms(10);
-		};
+		while(ADC_read(0) <= 5);
 	}
 	else
 		ball_detected = 0;
