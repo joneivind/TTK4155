@@ -17,11 +17,13 @@ uint8_t ball_detected = 0;
 uint16_t get_score(){
 	uint16_t detect_ball = ADC_read(0);
 	
-	if(detect_ball <= 5){
+	if(detect_ball <= 10){
 		ball_detected = 1;
 		newgame.score++;
 		printf("Score: %d\n", newgame.score-1);
-		while(ADC_read(0) <= 5);
+		while(ADC_read(0) <= 5){
+			_delay_ms(10);
+		};
 	}
 	else
 		ball_detected = 0;
@@ -33,12 +35,11 @@ void solenoid_init(){
 }
 
 void solenoid_trigger(CAN_message * message){
-
-	if(message->data[2]){	
-		PORTL &= ~(1 << PL0);
+	
+	if(message->data[2]){
+		PORTL |= (1 << PL0);
 		_delay_ms(50);
 	}
 	else
-		PORTL |= (1 << PL0);
-	//_delay_ms(1000);
+		PORTL &= ~(1 << PL0);
 }

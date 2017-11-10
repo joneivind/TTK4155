@@ -11,6 +11,7 @@
 #include "PWM.h"
 #include "ADC.h"
 #include "GAME.h"
+#include "motor.h"
 #include <avr/io.h>
 #include <stdio.h>
 #include <string.h>
@@ -37,18 +38,18 @@ int main(void)
     {
         CAN_recieve(&receivedMessage);
         //_delay_ms(10);
-		//CAN_printMessage(&receivedMessage);
+		CAN_printMessage(&receivedMessage);
 		
 		//_delay_ms(10);
 		CAN_PWMPosition(&receivedMessage); //TESING
-		printf("ADC: %d ", ADC_read(0));
 		get_score();
-		printf("Data[2] %d\n", receivedMessage.data[2]);
-		//if(receivedMessage.data[2] > 0)
 		solenoid_trigger(&receivedMessage);
 		
 		message.data[0] = newgame.score;
 		CAN_sendMessage(&message);
+		printf("Test\n");
+		//motor_test();
 		_delay_ms(10);
+		
     }
 }
