@@ -15,23 +15,15 @@ static int16_t prevError = 0;
 
 void motor_init(){
 	sei();
-	//DDRH |= (1 << DDH1);	//DIR pin
-	//DDRH |= (1 << DDH3);	//SEL pin
-	//DDRH |= (1 << DDH4);	//EN pin
-	//DDRH |= (1 << DDH5);	//!0E pin
-	//DDRH |= (1 << DDH6);	//RST pin
-	//
-	//
-	////Set PINH4 bit in PORTH register to enable motor (PINH4 = EN pin):
-	//PORTH |= (1 << PINH4);
-	//
-	////Reset the motor:
-	//MOTOR_reset();
 	DDRH |= (1 << PH1)|(1 << PH4);
 	DDRH |= (1 << PH5)|(1 << PH6)|(1 << PH3);
-	DDRK = 0x00;
 	
 	PORTH |= (1 << PH4);
+	
+	PORTH |= (1 << PH5);
+	PORTH |= (1 << PH6);
+	
+	MOTOR_reset();
 }
 
 
@@ -49,9 +41,9 @@ void motorSpeed(int16_t speed){
 	speed = (speed - 50)*2;
 	//set motor direction
 	if(speed < 0)
-		motorDirection(0);
-	else
 		motorDirection(1);
+	else
+		motorDirection(0);
 	
 	//Cap motor speed
 	if(abs(speed) > maxSpeed)
@@ -59,7 +51,7 @@ void motorSpeed(int16_t speed){
 		
 	speed = MOTOR_PDcontroller(abs(speed));
 	//printf("Speed: %d\n", abs(speed));
-	dacWrite(0, speed);
+	dacWrite(0, abs(speed));
 }
 
 void motorDirection(uint8_t dir){
@@ -73,72 +65,39 @@ void motorDirection(uint8_t dir){
 }
 
 uint8_t motorEncoderRead(){
-		//
-	//uint16_t encoderVal;
-		//
-	////Set OE low to enable encoder output:
-	////_delay_ms(5000);
-	//PORTH &= ~(1 << DDH5);
-////	_delay_ms(5000);
-	////Set SEL low to get high byte:
-	//PORTH &= ~(1 << DDH3);
-	////_delay_ms(5000);
-	//_delay_us(20);
-	//encoderVal = reverse(PINK) << 8; //Read high byte.
-	////_delay_ms(5000);
-		//
-	////printf("high: %d, ", encoderVal);
-	////Set SEL high to get low byte:
-	//PORTH |= (1 << DDH3);
-	////_delay_ms(5000);
-	//_delay_us(20);
-	//encoderVal |= reverse(PINK); //Read low byte.
-////	_delay_ms(5000);
-	////printf("low: %d\n", encoderVal);	
-	//MOTOR_reset();
-	////Set OE high to disable encoder output:
-	//PORTH |= (1 << DDH5);
-	////_delay_ms(5000);
-	//
-	//printf("Encoder: %d\n",encoderVal);
-		//
-	//Return encoder values:
-	//return encoderVal;
 		uint16_t encoderVal = 0x0000;
 		uint8_t MSB;
 		uint8_t LSB;
 		
-		//PORTH |= (1 << PH6);
+		PORTH |= (1 << PH6);
 		
-		PORTH &= ~(1 << PH5);
-		//_delay_ms(20);
-		
+		//Set !OE low
+		PORTH &= ~(1 << PH5);	
+		//Set SEL low	
 		PORTH &= ~(1 << PH3);
-		_delay_us(30);
-		
-		MSB = PINK;
-		
+		_delay_us(20);
+		//Read MSB
+		MSB = PINK;		
+		//printf("MSB: %d\n", MSB);
+		//Set SEL high
 		PORTH |= (1 << PH3);
-		_delay_us(30);
-		
-		LSB = PINK;
-		printf("Encoder: %d\n", LSB);
-		
+		_delay_us(20);
+		//Read LSB
+		LSB = PINK;		
+		//printf("LSB: %d\n", LSB);
+		////Toggle !RST
 		PORTH &= ~(1 << PH6);
-		
-		//PORTH |= (1 << PH5);
-		
-		encoderVal = (MSB<<8 | LSB);
+		//_delay_ms(10);
+		//PORTH |= (1 << PH6);		
+		//Set !OE high
+		//PORTH |= (1 << PH5);		
 		_delay_us(140);
+		//Process data		
+		encoderVal = (MSB<<8 | LSB);
+		printf("Encoder: %d\n", encoderVal);
 		return encoderVal;
 }
 
-uint8_t reverse(uint8_t x){
-	x = (((x & 0xaa) >> 1) | ((x & 0x55) << 1));
-	x = (((x & 0xcc) >> 2) | ((x & 0x33) << 2));
-	x = (((x & 0xf0) >> 4) | ((x & 0x0f) << 4));
-	return x;
-}
 
 void motor_test(){
 	
@@ -153,7 +112,7 @@ int8_t MOTOR_PDcontroller(uint8_t speed){
 	uint8_t r = speed;// MOTOR_calculateSpeed(xValue);
 	uint8_t y = abs(motorEncoderRead());
 	
-	float kp = 1;
+	float kp = -1.0;
 	float kd = 1;
 	
 	int8_t pError = (r-y);

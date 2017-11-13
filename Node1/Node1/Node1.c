@@ -64,6 +64,9 @@ int main()
 		joystickValueX = getControlOutput(1,100,5, &maxMinValues[0], &maxMinValues[1]);		
 		joystickValueY = getControlOutput(2,100,5, &maxMinValues[2], &maxMinValues[3]);
 		
+		//read slider
+		sliderValueA = getControlOutput(3,100,5, &maxMinValues[4], &maxMinValues[5]);
+		
 		/*message.data[0] = joystickValueX;
 		message.data[1] = joystickValueY;		
 		message.data[2] = leftButtonPressed;
