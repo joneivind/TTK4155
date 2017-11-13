@@ -16,18 +16,6 @@ volatile char *OLED_Data = (char *) 0x1200;
 uint8_t page, col;
 
 
-//ONLY FOR TESTING
-void OLED_WriteData(){
-	*OLED_Data =0b00010100;
-	*OLED_Data =0b01111111;
-	*OLED_Data =0b01111111;
-	*OLED_Data =0b00010100;
-	*OLED_Data =0b01111111;
-	*OLED_Data =0b01111111;
-	*OLED_Data =0b00010100;
-	*OLED_Data =0b00000000;
-}
-
 //Goto specific line and column
 void OLED_Pos(uint8_t line, uint8_t column){
 	
@@ -111,11 +99,15 @@ void OLED_ClearCol(){
 
 //Removes all things written on the screen
 void OLED_ClearScreen(){
-	//Runs the function OLED_ClearLine for all lines
-	for(uint8_t i=0; i<8; i++){
-		OLED_ClearLine(i);
+	for(int page = 0; page < 8; page++){
+		*OLED_Command = (0xB0 + page);
+		for(int i = 0; i < 128; ++i){
+			*OLED_Data = 0x00;
+		}
+			
 	}
 }
+
 
 //Initialization routine for the OLED_
 void OLED_Init(){
@@ -159,15 +151,14 @@ void OLED_Init(){
 	//Set normal display
 	*OLED_Command = 0xA6;
 	//Display on
-	*OLED_Command = 0xAF;
-	
+	*OLED_Command = 0xAF;	
 	//Set page start address
 	*OLED_Command = 0xB0;
 	//Set lower column start address
 	*OLED_Command = 0x00;
 	//Set higher column start address
 	*OLED_Command = 0x10;
+	
 	//Goto start position
-	OLED_Home(); 
-	//fdevopen(OLED_PrintChar, NULL);
+	OLED_ClearScreen();
 }

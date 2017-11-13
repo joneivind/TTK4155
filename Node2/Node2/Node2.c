@@ -37,27 +37,26 @@ int main(void)
 	CAN_message receivedMessage;
 	
 	printf("Initializing node 2...\n");
-	
+	//motor_test();
 	while(1)
     {
         CAN_recieve(&receivedMessage);
         //_delay_ms(20);
-		CAN_printMessage(&receivedMessage);
+		//CAN_printMessage(&receivedMessage);
 		
 		_delay_ms(10);
 		CAN_PWMPosition(&receivedMessage);
 		//get_score();
-		solenoid_trigger(&receivedMessage);
+		//solenoid_trigger(&receivedMessage);
 		
 		message.data[0] = newgame.score;
 		CAN_sendMessage(&message);
 		_delay_ms(10);
 		
 		
-		motorSpeed(receivedMessage.data[3]);
+		//motorSpeed(receivedMessage.data[3]);
 		//motor_test();
-		motorEncoderRead();
-		
-		
+		//motorEncoderRead();	
+		motorSpeedPos(&receivedMessage.data[3]);
     }
 }

@@ -20,10 +20,8 @@
 
 //Input parameters
 int maxMinValues[8] = {0,255,0,255,0,255,0,255}; // input ranges - max/min
-int joystickValueX = 0;
-int joystickValueY = 0;
-int sliderValueA = 0;
-int sliderValueB = 0;
+int joystickValueX = 50;
+int joystickValueY = 50;
 volatile uint8_t leftButtonPressed = 0;
 volatile uint8_t rightButtonPressed = 0;
 
@@ -41,48 +39,16 @@ int main()
 	OLED_Init();
 	menuInit();
 	CAN_init();
-	
-	//Initialize IO ports
-	//DDRB = 0x00; //Makes PORTB as Input
-	
-	//calibrate input
-	//setRange(maxMinValues);	
-	
-	//CAN_message message, receivedMessage;
-	//message.id = 3;
-	//message.length = 3;
-	
+		
 	while(1){
 		
-		//CAN test
-		
-		//read buttons		
-		leftButtonPressed = 0x01 & PINB;
-		rightButtonPressed = (0x02 & PINB) >> 1;
-		
-		//read joystick
-		joystickValueX = getControlOutput(1,100,5, &maxMinValues[0], &maxMinValues[1]);		
-		joystickValueY = getControlOutput(2,100,5, &maxMinValues[2], &maxMinValues[3]);
-		
-		//read slider
-		sliderValueA = getControlOutput(3,100,5, &maxMinValues[4], &maxMinValues[5]);
-		
-		/*message.data[0] = joystickValueX;
-		message.data[1] = joystickValueY;		
-		message.data[2] = leftButtonPressed;
-		
-		printf("X: %d, Y: %d B: %d\n", message.data[0], message.data[1], message.data[2]);
-		
-		CAN_sendMessage(&message);
-		CAN_recieve(&receivedMessage);*/
-		//CAN_printMessage(&receivedMessage);
-		//_delay_ms(10);
+		int8_t joystickValueY = getControlOutput(2,100,5, &maxMinValues[2], &maxMinValues[3]);
+		uint8_t leftButtonPressed = 0x01 & PINB;
 		
 		//Menu
 		maxItems = currentMenu.numOfChildren;
 		//printf("%s\n", currentMenu.title);
-		setMenu(&currentMenu, joystickValueY, leftButtonPressed, &currentMenuItem);		
-		
+		setMenu(&currentMenu, joystickValueY, leftButtonPressed, &currentMenuItem);
 		// Move menu cursor
 		if(joystickValueY != 50){						
 			if(joystickValueY > 55 && currentMenuItem > 0)

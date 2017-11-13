@@ -72,26 +72,32 @@ void getChildren(struct MenuItem * nodeName){
 				
 void setMenu(struct MenuItem * currentMenu, int joystick, int button, int *menuItem){
 	
-	int maxItems = currentMenu->numOfChildren-1; // Set number of current menu items
+	int maxItems = currentMenu->numOfChildren;//-1; // Set number of current menu items
 	
 	if(button){ // On button pressed
 		_delay_ms(200); // delay after keystroke
-		if(currentMenu->children[*menuItem]->children[0] != NULL){ // if item has child
+		
+		printf("Maxitems: %d\n", maxItems);
+		printf("MenuItem: %d\n", *menuItem);
+		if (*menuItem == maxItems && maxItems >0){
+			*currentMenu = *currentMenu->parent; // set parent menu as current menu
+			OLED_ClearScreen(); // clear oled screen
+			printMenuToScreen(currentMenu); // Show menu on screen
+			*menuItem = 0;
+			printCursor(*menuItem, 2);
+		}
+		else if(currentMenu->children[*menuItem]->children[0] != NULL){ // if item has child
 			*currentMenu = *currentMenu->children[*menuItem]; // set child menu as current menu
 			*menuItem = 0;
 			OLED_ClearScreen(); // clear oled screen
 			printMenuToScreen(currentMenu); // Show menu on screen
 			printCursor(*menuItem, 2);
 		}
-		else if(currentMenu->children[*menuItem]->fp() != NULL){ // else if child has function			
-			//OLED_ClearScreen(); // clear oled screen
-			//printf("Running function in %s\n", currentMenu->title);
-			//currentMenu->children[menuItem]->fp(); // run function
-		}
-		else if (menuItem == maxItems && currentMenu->parent != NULL){ // if has reached bottom of menu
-			OLED_ClearScreen(); // clear oled screen
-			currentMenu = currentMenu->parent; // set parent menu as current menu
-			printMenuToScreen(currentMenu->parent); // Show menu on screen
+		else if(currentMenu->children[*menuItem]->fp() != NULL){ // else if child has function				
+			//printf("HJELPES\n");		
+			////OLED_ClearScreen(); // clear oled screen
+			////printf("Running function in %s\n", currentMenu->title);
+			////currentMenu->children[menuItem]->fp(); // run function
 		}
 	//_delay_ms(500); // delay after keystroke
 	}
@@ -131,7 +137,7 @@ void printCursor(int currentPos, int offset){
 }
 
 void newGame(){
-	printf("New game\n");
+	//printf("New game\n");
 	OLED_ClearScreen();
 	
 	OLED_Pos(0,0);
@@ -199,15 +205,15 @@ void newGame(){
 	}
 }
 void highScore(){
-	printf("highscore\n");
+	//printf("highscore\n");
 }
 void soundSetting(){
-	printf("Sound toggle\n");
+	//printf("Sound toggle\n");
 	sound.title = "Sound on";
 }
 void aboutGame(){
-	printf("about\n");
+	//printf("about\n");
 }
 void calibrationDummy(){
-	printf("calibration\n");
+	//printf("calibration\n");
 }
