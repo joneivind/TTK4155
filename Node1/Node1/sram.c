@@ -4,8 +4,10 @@
  * Created: 11.09.2017 12:19:07
  *  Author: kjettho
  */ 
+
 #include <stdlib.h>
 #include "sram.h"
+
 void sramTest(void)
 {
 	volatile char *ext_ram = (char *) 0x1800; // Start address for the SRAM
@@ -41,7 +43,9 @@ void sramTest(void)
 	printf("SRAM test completed with\n%4d errors in write phase and\n%4d errors in retrieval phase\n\n", write_errors, retrieval_errors);
 }
 
-void sramInit(void){
+//Init SRAM
+void sramInit(void)
+{
 	MCUCR |= (1 << SRE); 
 	SFIOR |= (1 << XMM2);
 }

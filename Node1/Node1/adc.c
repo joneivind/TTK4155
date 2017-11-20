@@ -8,20 +8,16 @@
 #include "adc.h"
 
 volatile char *oledCPointer = (char *) 0x1000; // pointer to OLED command
-volatile char *oledDataPointer =(char *) 0x1200; // pointer to OLED Data
+volatile char *oledDataPointer = (char *) 0x1200; // pointer to OLED Data
 volatile char *adcPointer = (char *) 0x1400; // pointer to ADC
 volatile char *sramPointer = (char *) 0x1800; // pointer to SRAM
-/*
-//Initialize adress range
-void adcInit(void){
-	
-}
-*/
 
-// ADC read from channel
-int adc(int channel){	
+//ADC read from channel
+int adc(int channel)
+{	
 	char selectedAxis;
-	// Swicth-case depending on MUX channel 	
+	
+	//Swicth-case depending on MUX channel 	
 	switch (channel)
 	{
 		case 1:

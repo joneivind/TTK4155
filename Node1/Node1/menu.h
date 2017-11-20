@@ -13,13 +13,14 @@
 #include <util/delay.h>
 #include <string.h>
 
+//Menu elements
 struct MenuItem {
 	char * title;
 	struct MenuItem * parent;
 	struct MenuItem * children[8];
 	int (*fp)();
 	int numOfChildren;
-} mainmenu, newgame, settings, highscore, about, calibration, sound, misc, currentMenu;
+} mainmenu, newgame, settings, highscore, about, calibration, pid, modeselect, misc, currentMenu;
 
 void menuInit();
 void addChild(struct MenuItem * child, struct MenuItem * parentName, int (* function)());
@@ -31,7 +32,8 @@ void printCursor(int currentPos, int offset);
 
 void newGame();
 void highScore();
-void soundSetting();
+void pidSetting();
+void modeSetting();
 void aboutGame();
 void calibrationDummy();
 

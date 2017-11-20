@@ -18,18 +18,17 @@
 #include "CAN.h"
 #include <string.h>
 
-//Input parameters
-int maxMinValues[8] = {0,255,0,255,0,255,0,255}; // input ranges - max/min
+//Joystick/slider initial parameters
+int maxMinValues[8] = {0,255,0,255,0,255,0,255}; // min-max values for menu
 int joystickValueX = 50;
 int joystickValueY = 50;
 volatile uint8_t leftButtonPressed = 0;
 volatile uint8_t rightButtonPressed = 0;
 
-//Initialize menu system
+//Initialize menu system parameters
 int currentMenuItem = 0;
 int maxItems = 0;
 int runningFunction = 0;
-
 
 int main()
 {
@@ -38,19 +37,25 @@ int main()
 	sramInit();
 	OLED_Init();
 	menuInit();
-	CAN_init();
-		
-	while(1){
-		
+	CAN_init();	
+	
+	//Start menu
+	while(1)
+	{		
+		//Get values from button and joystick
 		int8_t joystickValueY = getControlOutput(2,100,5, &maxMinValues[2], &maxMinValues[3]);
-		uint8_t leftButtonPressed = 0x01 & PINB;
+		uint8_t leftButtonPressed = 0x01 & PINB;		
 		
-		//Menu
-		maxItems = currentMenu.numOfChildren;
-		//printf("%s\n", currentMenu.title);
+		//Get number of menu items
+		maxItems = currentMenu.numOfChildren; 
+		
+		//Update to current menu
 		setMenu(&currentMenu, joystickValueY, leftButtonPressed, &currentMenuItem);
-		// Move menu cursor
-		if(joystickValueY != 50){						
+		
+		//Move cursor with joystick
+		if(joystickValueY != 50)
+		{	
+			//Set current menu item
 			if(joystickValueY > 55 && currentMenuItem > 0)
 				currentMenuItem--;
 			else if(joystickValueY < 45 && currentMenuItem < maxItems-1)
@@ -58,11 +63,12 @@ int main()
 			else if(joystickValueY < 45 && currentMenuItem < maxItems && currentMenu.parent != NULL)
 				currentMenuItem++;
 				
+			//Update OLED screen
 			OLED_ClearCol();
 			OLED_Pos(currentMenuItem+2, 1);
 			OLED_Print(" >");
 			_delay_ms(100);
 		}
-	}	
+	}
 	return 0;
 }

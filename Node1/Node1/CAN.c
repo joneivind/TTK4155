@@ -11,29 +11,57 @@
 #include <string.h>
 #include <util/delay.h>
 
-void CAN_init(){
+//Init CAN
+void CAN_init()
+{
 	MCP_init();
 	//CAN_setMode(MODE_LOOPBACK);
 	CAN_setMode(MODE_NORMAL);
+	
+	//Make first package with init values
+	CAN_message message;
+	message.id = 3;
+	message.length = 7;
+	message.data[0] = 50;
+	message.data[1] = 50;
+	message.data[2] = 0;
+	message.data[3] = 50;
+	message.data[4] = 5;
+	message.data[5] = 0;
+	message.data[6] = 0;
+	
+	_delay_ms(10);
+	
+	//Send msg
+	CAN_sendMessage(&message);
+	
+	_delay_ms(10);
 }
 
-void CAN_setMode(char mode){
+//Set mode
+void CAN_setMode(char mode)
+{
 	MCP_bitMod(MCP_CANCTRL,MODE_MASK,mode);
 }
 
-void CAN_sendMessage(CAN_message * newMessage){
+//Send msg
+void CAN_sendMessage(CAN_message * newMessage)
+{
 	MCP_write(MCP_TXB0SIDL, (newMessage->id << 5));
 	MCP_write(MCP_TXB0SIDH, (newMessage->id >> 3));
 	MCP_write(MCP_TXB0DLC, newMessage->length);
 	
-	for(int i=0; i<newMessage->length; i++){
+	for(int i=0; i<newMessage->length; i++)
+	{
 		MCP_write(MCP_TXB0D0 + i, newMessage->data[i]);
 	}
 	
 	MCP_requestToSend(MCP_RTS_TX0);
 }
 
-void CAN_recieve(CAN_message * newReceivedMessage){		
+//Recieve msg
+void CAN_recieve(CAN_message * newReceivedMessage)
+{		
 	if(MCP_read(MCP_CANINTF), MCP_RX0IF){
 		_delay_ms(10);
 		newReceivedMessage->id = (MCP_read(MCP_RXB0SIDH) << 3) | (MCP_read(MCP_RXB0SIDL) >> 5);
@@ -45,10 +73,13 @@ void CAN_recieve(CAN_message * newReceivedMessage){
 	}
 }
 
-void CAN_printMessage(CAN_message * newReceivedMessage){	
+//Print msg
+void CAN_printMessage(CAN_message * newReceivedMessage)
+{	
 	printf("Id: %d\nMsg: ", newReceivedMessage->id);
 		
-	for(int i=0; i<newReceivedMessage->length; i++){
+	for(int i=0; i<newReceivedMessage->length; i++)
+	{
 		 printf("%c", newReceivedMessage->data[i]);
 	}
 	printf("\n");

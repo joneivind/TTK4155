@@ -4,6 +4,7 @@
  * Created: 25.09.2017 17:15:25
  *  Author: kjettho
  */ 
+
 #include <stdio.h>
 #include <avr/io.h>
 #include <util/delay.h>
@@ -11,14 +12,16 @@
 #include <avr/pgmspace.h>
 #include "fonts.h"
 
+//Setting addresses to OLED
 volatile char *OLED_Command = (char *) 0x1000;
 volatile char *OLED_Data = (char *) 0x1200;
+
+//Containers for page, column
 uint8_t page, col;
 
-
 //Goto specific line and column
-void OLED_Pos(uint8_t line, uint8_t column){
-	
+void OLED_Pos(uint8_t line, uint8_t column)
+{	
 	OLED_GotoLine(line);
 	
 	if(column < 128/FONTWIDTH){
@@ -31,7 +34,8 @@ void OLED_Pos(uint8_t line, uint8_t column){
 	}
 }
 
-void OLED_PrintChar(char c) {
+void OLED_PrintChar(char c)
+{
 	//Write a character
 	for (int i = 0; i < FONTWIDTH; i++) {
 		*OLED_Data = pgm_read_byte(&font8[c-' '][i]);
@@ -39,7 +43,8 @@ void OLED_PrintChar(char c) {
 	
 }
 
-void OLED_Print(char *c) {
+void OLED_Print(char *c)
+{
 	int i = 0;	
 	char tmp;
 	//Write the complete string
@@ -50,7 +55,8 @@ void OLED_Print(char *c) {
 }
 
 //Goto specific line
-void OLED_GotoLine(uint8_t line){	
+void OLED_GotoLine(uint8_t line)
+{	
 	OLED_Home();	
 	if(line < 8){
 		//Save page
@@ -65,56 +71,58 @@ void OLED_GotoLine(uint8_t line){
 }
 
 //Set the cursor to the start of the screen
-void OLED_Home(){
+void OLED_Home()
+{
 	*OLED_Command = 0x21;
 	*OLED_Command = 0x00;
 	*OLED_Command = 0x7f;	
 	*OLED_Command = 0x22;
 	*OLED_Command = 0x00;
-	*OLED_Command = 0x07;
-	
+	*OLED_Command = 0x07;	
 }
 
 //Clear all characters on a specific line
-void OLED_ClearLine(uint8_t line){
+void OLED_ClearLine(uint8_t line)
+{
 	//Goto specific line
 	OLED_GotoLine(line);
+	
 	//For all pixels on that line, write empty space
 	for(uint8_t i=0; i<128; i++){
 		*OLED_Data = 0x00;
 	}
+	
 	OLED_Home();
 }
 
 //Clear cursor col
-void OLED_ClearCol(){
+void OLED_ClearCol()
+{
 	for(uint8_t j=0; j<8; j++){
 		OLED_Pos(j, 0);
-		for (int i = 0; i < FONTWIDTH*2; i++) {
+		
+		for (int i = 0; i < FONTWIDTH*2; i++){
 			*OLED_Data = 0x00;
 		}
 	}
-		
+
 }
 
 //Removes all things written on the screen
-void OLED_ClearScreen(){
+void OLED_ClearScreen()
+{
 	for(int page = 0; page < 8; page++){
 		*OLED_Command = (0xB0 + page);
+		
 		for(int i = 0; i < 128; ++i){
 			*OLED_Data = 0x00;
-		}
-			
+		}			
 	}
 }
 
-
 //Initialization routine for the OLED_
-void OLED_Init(){
-	
-	//printf("Initializing OLED_ display... ");
-	
-
+void OLED_Init()
+{
 	//Display off
 	*OLED_Command = 0xAE;	
 	//Segment remap

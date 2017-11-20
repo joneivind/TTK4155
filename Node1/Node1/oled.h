@@ -5,7 +5,6 @@
  *  Author: kjettho
  */ 
 
-
 #ifndef OLED_H_
 #define OLED_H_
 
@@ -20,6 +19,5 @@ void oledHome();
 void oledPrintChar(char c);
 void oledPrint(char *c);
 void oledClearCol();
-
 
 #endif /* OLED_H_ */

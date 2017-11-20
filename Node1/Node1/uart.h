@@ -12,7 +12,6 @@
 #include <avr/io.h>
 #include <stdio.h>
 
-//Header file for the uart communication
 void uartInit();
 void uartTransmit(unsigned char data);
 unsigned char uartReceive();
