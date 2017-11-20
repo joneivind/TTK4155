@@ -5,7 +5,6 @@
  *  Author: jonestr
  */ 
 
-
 #ifndef CAN_H_
 #define CAN_H_
 #include <avr/io.h>
@@ -21,6 +20,6 @@ void CAN_setMode(char mode);
 void CAN_sendMessage(CAN_message * message);
 void CAN_recieve(CAN_message * receivedMessage);
 void CAN_printMessage(CAN_message * msg);
-void CAN_PWMPosition(CAN_message * msgPos);
+void CAN_PWMPosition(uint8_t * pos);
 
 #endif /* CAN_H_ */

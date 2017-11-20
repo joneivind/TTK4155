@@ -6,10 +6,10 @@
  */ 
 
 #include <avr/interrupt.h>
-#include "CAN.h"
 
-void TC_init(){
-
+//Init PWM
+void TC_init()
+{
 	TCCR3A |= (1 << WGM30) | (1 << WGM31);
 	TCCR3B |= (1 << WGM32) | (1 << WGM33);
 
@@ -23,9 +23,9 @@ void TC_init(){
 
 	TCCR3B |= (1 << CS31);
 	TCCR3B &= ~((1 << CS30) | (1 << CS32));
-
 }
 
+//Set duty cycle of PWM signal from a value
 void PWM_setDutyCycle(uint8_t xValue)
 {
   	uint16_t dutyC = (1800+(xValue*20));

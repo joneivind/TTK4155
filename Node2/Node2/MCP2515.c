@@ -10,12 +10,16 @@
 #include "SPI.h"
 #include <util/delay.h>
 
-void MCP_init(){
+//Start MCP with SPI
+void MCP_init()
+{
 	SPI_init();
 	MCP_reset();
 }
 
-char MCP_read(char adr){
+//Read from MCP
+char MCP_read(char adr)
+{
 	SPI_slaveEnable(1); //enable CS pin	
 	SPI_write(MCP_READ); //set read instruction
 	SPI_write(adr); //set address
@@ -24,7 +28,9 @@ char MCP_read(char adr){
 	return temp;
 }
 
-void MCP_write(char adr, char data){
+//Write to MCP
+void MCP_write(char adr, char data)
+{
 	SPI_slaveEnable(1); //enable CS pin	
 	SPI_write(MCP_WRITE); //set write instruction
 	SPI_write(adr); //set address
@@ -32,13 +38,17 @@ void MCP_write(char adr, char data){
 	SPI_slaveEnable(0); //disable CS pin
 }
 
-void MCP_requestToSend(char txBuffer){
+//MCP request to send
+void MCP_requestToSend(char txBuffer)
+{
 	SPI_slaveEnable(1); //enable CS pin	
 	SPI_write(MCP_RTS_TX0 | txBuffer); //request-to-send	
 	SPI_slaveEnable(0); //disable CS pin
 }
 
-char MCP_readStatus(){
+//MCP read status
+char MCP_readStatus()
+{
 	SPI_slaveEnable(1); //enable CS pin	
 	SPI_write(MCP_READ_STATUS); //read status instruction	
 	char temp = SPI_read();
@@ -46,7 +56,9 @@ char MCP_readStatus(){
 	return temp;
 }
 
-void MCP_bitMod(char adr, char mask, char data){
+//MCP set bits
+void MCP_bitMod(char adr, char mask, char data)
+{
 	SPI_slaveEnable(1); //enable CS pin
 	SPI_write(MCP_BITMOD); //bit modify instruction
 	SPI_write(adr); //set address
@@ -55,7 +67,9 @@ void MCP_bitMod(char adr, char mask, char data){
 	SPI_slaveEnable(0); //disable CS pin
 }
 
-void MCP_reset(){
+//MCP reset
+void MCP_reset()
+{
 	SPI_slaveEnable(1); //enable CS pin	
 	SPI_write(MCP_RESET); //reset instruction	
 	_delay_ms(10);

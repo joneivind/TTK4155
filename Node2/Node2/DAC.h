@@ -13,5 +13,6 @@
 
 void dacInit(uint8_t address);
 void dacWrite(uint8_t channel, uint8_t value);
+void dacRead();
 
 #endif /* DAC_H_ */

@@ -5,7 +5,6 @@
  *  Author: kjettho
  */ 
 
-
 #include "uart.h"
 #include "CAN.h"
 #include "PWM.h"
@@ -26,37 +25,72 @@ int main(void)
 	TC_init();
 	ADC_init();
 	solenoid_init();
-	//dacInit(0b111);
 	motor_init();
 	TWI_Master_Initialise();
 	
+	//Set up CAN messages
 	CAN_message message;
 	message.id = 2;
 	message.length = 1;
 	
 	CAN_message receivedMessage;
-	
 	printf("Initializing node 2...\n");
-	//motor_test();
+		
+	//Make init constants
+	uint8_t kp;
+	uint8_t mode = 0;
+	uint8_t gameActive = 0;	
+	uint8_t motor;
+	uint8_t servo;
+	uint8_t solenoid;
+	
+	//Set number of lives
+	setLives(10);
+	
 	while(1)
-    {
+    {		
+		//Check current game mode
         CAN_recieve(&receivedMessage);
-        //_delay_ms(20);
-		//CAN_printMessage(&receivedMessage);
+		gameActive = receivedMessage.data[6];		
+		//CAN_printMessage(&receivedMessage); //Print out CAN for debugging		
 		
-		_delay_ms(10);
-		CAN_PWMPosition(&receivedMessage);
-		//get_score();
-		//solenoid_trigger(&receivedMessage);
-		
-		message.data[0] = newgame.score;
-		CAN_sendMessage(&message);
-		_delay_ms(10);
-		
-		
-		//motorSpeed(receivedMessage.data[3]);
-		//motor_test();
-		//motorEncoderRead();	
-		motorSpeedPos(&receivedMessage.data[3]);
-    }
+		//If game mode is active, start game
+		if (gameActive)
+		{			
+			//Set mode and P-value
+			setKp(&receivedMessage.data[4]);
+			mode = receivedMessage.data[5];
+			
+			//Get controller data from CAN message
+			switch(mode){
+				case 0:				
+					servo = receivedMessage.data[0];
+					solenoid = receivedMessage.data[2];
+					motor = receivedMessage.data[3];
+				break;
+				case 1:
+					motor = abs(ADC_read(2))*0.1;
+					servo = abs(ADC_read(3))*0.1;
+					solenoid = abs(ADC_read(4))*0.1;			
+				break;
+			}
+			
+			//Send controller values to servo, solenoid, motor
+			PWM_setDutyCycle(servo);
+			solenoid_trigger(mode, solenoid);
+			motorSpeedPos(motor);
+			
+			//Check if ball is at bottom
+			get_lives(); 
+			_delay_ms(10);
+			
+			//Transmit score back to node 1
+			message.data[0] = newgame.lives; 
+			printf("Lives: %d\n", message.data[0]);
+			CAN_sendMessage(&message);
+		}
+		else
+			setLives(10);				
+			_delay_ms(200);
+	}
 }

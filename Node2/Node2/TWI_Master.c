@@ -130,6 +130,7 @@ unsigned char TWI_Get_Data_From_Transceiver( unsigned char *msg, unsigned char m
     for ( i=0; i<msgSize; i++ )                 // Copy data from Transceiver buffer.
     {
       msg[ i ] = TWI_buf[ i ];
+	  printf("SUCCESS!\n");
     }
   }
   return( TWI_statusReg.lastTransOK );                                   

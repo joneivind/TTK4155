@@ -12,12 +12,14 @@
 #define SAMPLES 51 // Number of measurements
 uint16_t storageArray[SAMPLES] = {0};
 
-void ADC_init(void){
+//Setting reg values for adc
+void ADC_init(void)
+{
 	ADCSRA	|= (1 << ADEN) | (1 << ADPS0) | (1 << ADPS1) | (1 << ADPS2);
 	ADMUX	|= (1<<REFS0);
-	ADMUX	&= ~(1<<REFS1);
 }
 
+//Median filtering
 uint16_t medianFilter(uint16_t inputValue)
 {	
 	uint16_t newVal, temp, temp2;
@@ -51,11 +53,14 @@ uint16_t medianFilter(uint16_t inputValue)
 	return sorted[SAMPLES - (SAMPLES/2)]; // Return median value
 }
 
-uint16_t ADC_read(uint8_t channel){
-	ADMUX	|= ((1<<channel) & 0x03);
+//Read from adc channel
+uint16_t ADC_read(uint8_t channel)
+{
+	channel &= 0b00000111;
+	ADMUX	= (ADMUX & 0xF8)|channel;
 	ADCSRA	|= (1 << ADSC);
 
 	while((ADCSRA & (1<<ADSC))){ ; }
 
-	return medianFilter(ADC);
+	return ADC;
 }

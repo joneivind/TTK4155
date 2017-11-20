@@ -13,11 +13,12 @@
 #include <stdio.h>
 
 struct game_stats{
-	uint8_t score;	
+	uint8_t lives;	
 } newgame;
 
-uint16_t get_score();
+void setLives(uint8_t numLives);
+uint16_t get_lives();
 void solenoid_init();
-void solenoid_trigger(CAN_message * message);
+void solenoid_trigger(uint8_t mode, uint8_t trigger);
 
 #endif /* GAME_H_ */

@@ -43,7 +43,6 @@ C_SRCS +=  \
 ../GAME.c \
 ../MCP2515.c \
 ../motor.c \
-../motor_controller.c \
 ../Node2.c \
 ../PWM.c \
 ../SPI.c \
@@ -64,7 +63,6 @@ DAC.o \
 GAME.o \
 MCP2515.o \
 motor.o \
-motor_controller.o \
 Node2.o \
 PWM.o \
 SPI.o \
@@ -78,7 +76,6 @@ DAC.o \
 GAME.o \
 MCP2515.o \
 motor.o \
-motor_controller.o \
 Node2.o \
 PWM.o \
 SPI.o \
@@ -92,7 +89,6 @@ DAC.d \
 GAME.d \
 MCP2515.d \
 motor.d \
-motor_controller.d \
 Node2.d \
 PWM.d \
 SPI.d \
@@ -106,7 +102,6 @@ DAC.d \
 GAME.d \
 MCP2515.d \
 motor.d \
-motor_controller.d \
 Node2.d \
 PWM.d \
 SPI.d \
@@ -127,8 +122,6 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
-
-
 
 
 

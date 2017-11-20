@@ -158,12 +158,6 @@
     <Compile Include="motor.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="motor_controller.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="motor_controller.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="Node2.c">
       <SubType>compile</SubType>
     </Compile>

@@ -11,19 +11,23 @@
 #include <string.h>
 #include <util/delay.h>
 
-void CAN_init(){
+//Initiate can bus with spi and mpc
+void CAN_init()
+{	
 	SPI_init();
 	MCP_reset();
 	
 	printf("CAN initiating...\n");
 
-	MCP_bitMod(MCP_RXB0CTRL, 0x60, MCP_FILTER_OFF);
+	MCP_bitMod(MCP_RXB0CTRL, 0x60, MCP_FILTER_OFF); // No filter
 	MCP_bitMod(MCP_RXB0CTRL, 0x04, MCP_ROLLOVER_OFF); // Disable rollover mode on MCP
-	MCP_bitMod(MCP_CANINTE, 0xFF, MCP_RX_INT);	
-	//MCP_bitMod(MCP_CANCTRL, 0xE0,MODE_LOOPBACK);
-	CAN_setMode(MODE_NORMAL);
+	MCP_bitMod(MCP_CANINTE, 0xFF, MCP_RX_INT);
+	//MCP_bitMod(MCP_CANCTRL, 0xE0,MODE_LOOPBACK); // uncomment to use loop back mode
+	CAN_setMode(MODE_NORMAL); // CAN normal mode
 	
 	uint8_t canStat = MCP_read(MCP_CANSTAT);
+	
+	//Print CAN mode
 	switch (canStat & MODE_MASK){
 		case MODE_NORMAL:
 		printf("CAN is in Normal Mode: %d.\n", canStat);
@@ -34,24 +38,19 @@ void CAN_init(){
 		case MODE_CONFIG:
 		printf("CAN is in Config Mode: %d.\n", canStat);
 		break;
-	}	
+	}
 	printf("CAN initiated!\n");
 }
 
-void CAN_setMode(char mode){
+//Set CAN mode
+void CAN_setMode(char mode)
+{
 	MCP_bitMod(MCP_CANCTRL,MODE_MASK,mode);
 }
 
-void CAN_sendMessage(CAN_message * message){
-	/*uint8_t status = MCP_readStatus();
-	while ((status & 4))
-	{
-		printf("Ikke klart\n");
-		printf("status: %d\n",MCP_readStatus());
-		_delay_ms(100);
-	}*/
-	//printf("Klart\n");
-	
+//Send CAN message
+void CAN_sendMessage(CAN_message * message)
+{	
 	MCP_write(MCP_TXB0SIDL, (message->id << 5));
 	MCP_write(MCP_TXB0SIDH, (message->id >> 3));
 	MCP_write(MCP_TXB0DLC, message->length);
@@ -61,25 +60,12 @@ void CAN_sendMessage(CAN_message * message){
 	}
 	
 	MCP_requestToSend(MCP_RTS_TX0);
-	
-	//printf("CAN message sent\n");
 }
 
-void CAN_recieve(CAN_message * receivedMessage){
-	//uint8_t status = MCP_readStatus();
-	//printf("Status: %d\n",status);	
-	/*while (!(status & MCP_RX0IF) || !(status & MCP_RX1IF))
-	{
-		printf("Ingen ny melding\n");
-		_delay_ms(100);
-		status = MCP_readStatus();
-		printf("Status: %d\n",status);
-		
-	}*/
-	
-		
+//Recieve CAN message
+void CAN_recieve(CAN_message * receivedMessage)
+{
 	//Check if CAN has message
-	//if(MCP_read(MCP_CANINTF)&(MCP_RX0IF|MCP_RX1IF)){
 	if(MCP_read(MCP_CANSTAT) & 0x0C){
 		receivedMessage->id = (MCP_read(MCP_RXB0SIDH) << 3) | (MCP_read(MCP_RXB0SIDL) >> 5);
 		receivedMessage->length = MCP_read(MCP_RXB0DLC) & 0x0F;
@@ -90,7 +76,9 @@ void CAN_recieve(CAN_message * receivedMessage){
 	}
 }
 
-void CAN_printMessage(CAN_message * msg){	
+//Print CAN message
+void CAN_printMessage(CAN_message * msg)
+{	
 	printf("Node 2:\nId: %d\n", msg->id);
 	printf("Length: %d\n",msg->length);	
 	printf("Data: ");
@@ -98,9 +86,4 @@ void CAN_printMessage(CAN_message * msg){
 		 printf("%d, ", msg->data[i]);
 	}
 	printf("\n");
-}
-
-void CAN_PWMPosition(CAN_message * msgPos){ 
-	uint8_t xValue = msgPos->data[0];
-	PWM_setDutyCycle(xValue);
 }

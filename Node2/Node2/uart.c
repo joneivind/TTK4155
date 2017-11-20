@@ -2,8 +2,9 @@
  * uart.c
  *
  * Created: 04.09.2017 14:11:35
- *  Author: TeamNineteen
+ *  Author: kjettho
  */ 
+
 #include <avr/io.h>
 #include "uart.h"
 #define FOSC 16000000
